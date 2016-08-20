@@ -323,10 +323,7 @@ static BOOL configured = FALSE;
 }    
 
 -(BOOL) isOtherAudioPlaying {
-    UInt32 isPlaying = 0;
-    UInt32 varSize = sizeof(isPlaying);
-    AudioSessionGetProperty (kAudioSessionProperty_OtherAudioIsPlaying, &varSize, &isPlaying);
-    return (isPlaying != 0);
+    return [[AVAudioSession sharedInstance] isOtherAudioPlaying];
 }
 
 -(void) setMode:(tAudioManagerMode) mode {
@@ -404,8 +401,15 @@ static BOOL configured = FALSE;
     if ((self = [super init])) {
         
         //Initialise the audio session 
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
         AVAudioSession* session = [AVAudioSession sharedInstance];
         session.delegate = self;
+#else
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(beginInterruption)
+                                                     name:        AVAudioSessionInterruptionNotification
+                                                   object:      [AVAudioSession sharedInstance]];
+#endif
     
         _mode = mode;
         backgroundMusicCompletionSelector = nil;
@@ -474,7 +478,7 @@ static BOOL configured = FALSE;
 //ringer mute switch to off (i.e. enables sound) therefore polling is the only reliable way to
 //determine ringer switch state
 -(BOOL) isDeviceMuted {
-
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
 #if TARGET_IPHONE_SIMULATOR
     //Calling audio route stuff on the simulator causes problems
     return NO;
@@ -483,7 +487,11 @@ static BOOL configured = FALSE;
     UInt32 propertySize = sizeof (CFStringRef);
     
     AudioSessionGetProperty (
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
                              kAudioSessionProperty_AudioRoute,
+#else
+                             kAudioSessionProperty_AudioRouteDescription,
+#endif
                              &propertySize,
                              &newAudioRoute
                              );
@@ -501,7 +509,10 @@ static BOOL configured = FALSE;
         return (newDeviceIsMuted == kCFCompareEqualTo);
     }    
 #endif
-}    
+#else
+    return NO;
+#endif
+}
 
 #pragma mark Audio Interrupt Protocol
 

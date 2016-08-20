@@ -42,7 +42,7 @@ public:
 
 static inline unsigned int getHashCodeByString(const char *key)
 {
-	unsigned int len = strlen(key);
+	unsigned int len = (unsigned int)strlen(key);
 	const char *end=key+len;
 	unsigned int hash;
 
@@ -183,10 +183,7 @@ public:
     @param pszFilePath The path of the effect file,or the FileName of T_SoundResInfo
     @bLoop Whether to loop the effect playing, default value is false
     */
-    unsigned int playEffect(const char* pszFilePath, bool bLoop);
-    unsigned int playEffect(const char* pszFilePath) {
-    	return this->playEffect(pszFilePath, false);
-    }
+    unsigned int playEffect(const char* pszFilePath, bool bLoop = false, float fPitch=1.0f, float fPan=0.0f, float fGain=1.0f);
 
     /**
     @brief Pause playing sound effect
