@@ -159,11 +159,11 @@ void CCProfilingEndTimingBlock(const char *timerName)
 
     CCAssert(timer, "CCProfilingTimer  not found");
     
-    int duration = 1000000 * (now.tv_sec - timer->m_sStartTime.tv_sec) + (now.tv_usec - timer->m_sStartTime.tv_usec);
+    int duration = (int)(1000000 * (now.tv_sec - timer->m_sStartTime.tv_sec) + (now.tv_usec - timer->m_sStartTime.tv_usec));
 
     timer->totalTime += duration;
     timer->m_dAverageTime1 = (timer->m_dAverageTime1 + duration) / 2.0f;
-    timer->m_dAverageTime2 = timer->totalTime / timer->numberOfCalls;
+    timer->m_dAverageTime2 = (int) (timer->totalTime / timer->numberOfCalls);
     timer->maxTime = MAX( timer->maxTime, duration);
     timer->minTime = MIN( timer->minTime, duration);
 }

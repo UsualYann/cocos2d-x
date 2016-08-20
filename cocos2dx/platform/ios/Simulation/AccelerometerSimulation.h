@@ -6,6 +6,7 @@
  *  Copyright 2008 Seastringo Oy. All rights reserved.
  *
  */
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
 #import <TargetConditionals.h>
 
 // when compiling to ARM (iPhone device), hide everything and use system defaults
@@ -56,4 +57,5 @@
 
 @end
 
+#endif
 #endif

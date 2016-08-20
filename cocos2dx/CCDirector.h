@@ -351,8 +351,9 @@ public:
      @js NA
      @lua NA
      */
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
     CC_PROPERTY(CCAccelerometer*, m_pAccelerometer, Accelerometer);
-
+#endif
     /* delta time since last tick to main loop */
 	CC_PROPERTY_READONLY(float, m_fDeltaTime, DeltaTime);
 	

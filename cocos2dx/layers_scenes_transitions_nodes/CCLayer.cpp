@@ -28,7 +28,9 @@ THE SOFTWARE.
 #include "CCLayer.h"
 #include "touch_dispatcher/CCTouchDispatcher.h"
 #include "keypad_dispatcher/CCKeypadDispatcher.h"
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
 #include "CCAccelerometer.h"
+#endif
 #include "CCDirector.h"
 #include "support/CCPointExtension.h"
 #include "script_support/CCScriptSupport.h"
@@ -226,6 +228,7 @@ void CCLayer::setAccelerometerEnabled(bool enabled)
 
         if (m_bRunning)
         {
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
             CCDirector* pDirector = CCDirector::sharedDirector();
             if (enabled)
             {
@@ -235,6 +238,7 @@ void CCLayer::setAccelerometerEnabled(bool enabled)
             {
                 pDirector->getAccelerometer()->setDelegate(NULL);
             }
+#endif
         }
     }
 }
@@ -245,8 +249,10 @@ void CCLayer::setAccelerometerInterval(double interval) {
     {
         if (m_bRunning)
         {
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
             CCDirector* pDirector = CCDirector::sharedDirector();
             pDirector->getAccelerometer()->setAccelerometerInterval(interval);
+#endif
         }
     }
 }
@@ -345,7 +351,9 @@ void CCLayer::onEnter()
     // add this layer to concern the Accelerometer Sensor
     if (m_bAccelerometerEnabled)
     {
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
         pDirector->getAccelerometer()->setDelegate(this);
+#endif
     }
 
     // add this layer to concern the keypad msg
@@ -368,7 +376,9 @@ void CCLayer::onExit()
     // remove this layer from the delegates who concern Accelerometer Sensor
     if (m_bAccelerometerEnabled)
     {
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
         pDirector->getAccelerometer()->setDelegate(NULL);
+#endif
     }
 
     // remove this layer from the delegates who concern the keypad msg
@@ -384,8 +394,10 @@ void CCLayer::onEnterTransitionDidFinish()
 {
     if (m_bAccelerometerEnabled)
     {
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
         CCDirector* pDirector = CCDirector::sharedDirector();
         pDirector->getAccelerometer()->setDelegate(this);
+#endif
     }
     
     CCNode::onEnterTransitionDidFinish();

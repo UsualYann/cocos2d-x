@@ -57,7 +57,7 @@ static AccelerometerDispatcher* s_pAccelerometerDispatcher;
 - (void) addDelegate: (cocos2d::CCAccelerometerDelegate *) delegate
 {
     delegate_ = delegate;
-    
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
     if (delegate_)
     {
         [[UIAccelerometer sharedAccelerometer] setDelegate:self];
@@ -66,13 +66,17 @@ static AccelerometerDispatcher* s_pAccelerometerDispatcher;
     {
         [[UIAccelerometer sharedAccelerometer] setDelegate:nil];
     }
+#endif
 }
 
 -(void) setAccelerometerInterval:(float)interval
 {
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
     [[UIAccelerometer sharedAccelerometer] setUpdateInterval:interval];
+#endif
 }
 
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
 {   
     if (! delegate_)
@@ -110,6 +114,6 @@ static AccelerometerDispatcher* s_pAccelerometerDispatcher;
     
     delegate_->didAccelerate(acceleration_);
 }
-
+#endif
 @end
 

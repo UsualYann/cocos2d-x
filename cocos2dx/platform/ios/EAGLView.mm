@@ -186,6 +186,7 @@ static EAGLView *view = 0;
 
 - (void)didMoveToWindow;
 {
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onUIKeyboardNotification:)
                                                  name:UIKeyboardWillShowNotification object:nil];
@@ -200,6 +201,7 @@ static EAGLView *view = 0;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onUIKeyboardNotification:)
                                                  name:UIKeyboardDidHideNotification object:nil];
+#endif
 }
 
 -(int) getWidth
@@ -405,7 +407,7 @@ static EAGLView *view = 0;
     
     int i = 0;
     for (UITouch *touch in touches) {
-        ids[i] = (intptr_t)touch;
+        ids[i] = (int)((intptr_t)touch);
         xs[i] = [touch locationInView: [touch view]].x * view.contentScaleFactor;;
         ys[i] = [touch locationInView: [touch view]].y * view.contentScaleFactor;;
         ++i;
@@ -425,7 +427,7 @@ static EAGLView *view = 0;
     
     int i = 0;
     for (UITouch *touch in touches) {
-        ids[i] = (intptr_t)touch;
+        ids[i] = (int)((intptr_t)touch);
         xs[i] = [touch locationInView: [touch view]].x * view.contentScaleFactor;;
         ys[i] = [touch locationInView: [touch view]].y * view.contentScaleFactor;;
         ++i;
@@ -446,7 +448,7 @@ static EAGLView *view = 0;
     
     int i = 0;
     for (UITouch *touch in touches) {
-        ids[i] = (intptr_t)touch;
+        ids[i] = (int)((intptr_t)touch);
         xs[i] = [touch locationInView: [touch view]].x * view.contentScaleFactor;;
         ys[i] = [touch locationInView: [touch view]].y * view.contentScaleFactor;;
         ++i;
@@ -467,7 +469,7 @@ static EAGLView *view = 0;
     
     int i = 0;
     for (UITouch *touch in touches) {
-        ids[i] = (intptr_t)touch;
+        ids[i] = (int)((intptr_t)touch);
         xs[i] = [touch locationInView: [touch view]].x * view.contentScaleFactor;;
         ys[i] = [touch locationInView: [touch view]].y * view.contentScaleFactor;;
         ++i;
@@ -519,7 +521,7 @@ static EAGLView *view = 0;
         markedText_ = nil;
     }
     const char * pszText = [text cStringUsingEncoding:NSUTF8StringEncoding];
-    cocos2d::CCIMEDispatcher::sharedDispatcher()->dispatchInsertText(pszText, strlen(pszText));
+    cocos2d::CCIMEDispatcher::sharedDispatcher()->dispatchInsertText(pszText, (int)strlen(pszText));
 }
 
 - (void)deleteBackward
@@ -627,7 +629,7 @@ static EAGLView *view = 0;
         return;
     }
     const char * pszText = [markedText_ cStringUsingEncoding:NSUTF8StringEncoding];
-    cocos2d::CCIMEDispatcher::sharedDispatcher()->dispatchInsertText(pszText, strlen(pszText));
+    cocos2d::CCIMEDispatcher::sharedDispatcher()->dispatchInsertText(pszText, (int)strlen(pszText));
     [markedText_ release];
     markedText_ = nil;
 }
@@ -724,6 +726,7 @@ static EAGLView *view = 0;
     return nil;
 }
 
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
 UIInterfaceOrientation getFixedOrientation(UIInterfaceOrientation statusBarOrientation)
 {
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
@@ -732,12 +735,14 @@ UIInterfaceOrientation getFixedOrientation(UIInterfaceOrientation statusBarOrien
     }
     return statusBarOrientation;
 }
+#endif
 
 #pragma mark -
 #pragma mark UIKeyboard notification
 
 - (void)onUIKeyboardNotification:(NSNotification *)notif;
 {
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
     NSString * type = notif.name;
     
     NSDictionary* info = [notif userInfo];
@@ -805,7 +810,6 @@ UIInterfaceOrientation getFixedOrientation(UIInterfaceOrientation statusBarOrien
         default:
             break;
     }
-    
     float scaleX = cocos2d::CCEGLView::sharedOpenGLView()->getScaleX();
 	float scaleY = cocos2d::CCEGLView::sharedOpenGLView()->getScaleY();
     
@@ -850,6 +854,7 @@ UIInterfaceOrientation getFixedOrientation(UIInterfaceOrientation statusBarOrien
         dispatcher->dispatchKeyboardDidShow(notiInfo);
         caretRect_ = end;
         caretRect_.origin.y = viewSize.height - (caretRect_.origin.y + caretRect_.size.height + [UIFont smallSystemFontSize]);
+
         caretRect_.size.height = 0;
         isKeyboardShown_ = YES;
     }
@@ -863,6 +868,8 @@ UIInterfaceOrientation getFixedOrientation(UIInterfaceOrientation statusBarOrien
         dispatcher->dispatchKeyboardDidHide(notiInfo);
         isKeyboardShown_ = NO;
     }
+    
+#endif
 }
 
 -(void) doAnimationWhenKeyboardMoveWithDuration:(float)duration distance:(float)dis
@@ -882,6 +889,7 @@ UIInterfaceOrientation getFixedOrientation(UIInterfaceOrientation statusBarOrien
         dis /= self.contentScaleFactor;
     }
     
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
     switch (getFixedOrientation([[UIApplication sharedApplication] statusBarOrientation]))
     {
         case UIInterfaceOrientationPortrait:
@@ -893,7 +901,9 @@ UIInterfaceOrientation getFixedOrientation(UIInterfaceOrientation statusBarOrien
             break;
             
         case UIInterfaceOrientationLandscapeLeft:
+#endif
             self.frame = CGRectMake(originalRect_.origin.x - dis, originalRect_.origin.y , originalRect_.size.width, originalRect_.size.height);
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
             break;
             
         case UIInterfaceOrientationLandscapeRight:
@@ -903,6 +913,7 @@ UIInterfaceOrientation getFixedOrientation(UIInterfaceOrientation statusBarOrien
         default:
             break;
     }
+#endif
     
 	[UIView commitAnimations];
 }

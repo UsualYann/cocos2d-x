@@ -246,7 +246,7 @@ void CCNode::setRotationY(float fRotationY)
 /// scale getter
 float CCNode::getScale(void)
 {
-    CCAssert( m_fScaleX == m_fScaleY, "CCNode#scale. ScaleX != ScaleY. Don't know which one to return");
+//    CCAssert( m_fScaleX == m_fScaleY, "CCNode#scale. ScaleX != ScaleY. Don't know which one to return");
     return m_fScaleX;
 }
 
@@ -882,8 +882,8 @@ void CCNode::transform()
     kmMat4 transfrom4x4;
 
     // Convert 3x3 into 4x4 matrix
-    nodeToParentTransform();
-    CGAffineToGL(&m_sTransform, transfrom4x4.mat);
+    CCAffineTransform tmpAffine = this->nodeToParentTransform();
+    CGAffineToGL(&tmpAffine, transfrom4x4.mat);
 
     // Update Z vertex manually
     transfrom4x4.mat[14] = m_fVertexZ;
@@ -1143,7 +1143,7 @@ void CCNode::update(float fDelta)
     }
 }
 
-const CCAffineTransform& CCNode::nodeToParentTransform(void)
+CCAffineTransform CCNode::nodeToParentTransform(void)
 {
     if (m_bTransformDirty) 
     {
@@ -1226,7 +1226,7 @@ void CCNode::setAdditionalTransform(const CCAffineTransform& additionalTransform
     m_bAdditionalTransformDirty = true;
 }
 
-const CCAffineTransform& CCNode::parentToNodeTransform(void)
+CCAffineTransform CCNode::parentToNodeTransform(void)
 {
     if ( m_bInverseDirty ) {
         m_sInverse = CCAffineTransformInvert(this->nodeToParentTransform());

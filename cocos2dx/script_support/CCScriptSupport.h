@@ -26,10 +26,14 @@
 #define __SCRIPT_SUPPORT_H__
 
 #include "platform/CCCommon.h"
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
 #include "CCAccelerometer.h"
+#endif
 #include "touch_dispatcher/CCTouch.h"
 #include "cocoa/CCSet.h"
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
 #include "CCAccelerometer.h"
+#endif
 #include <map>
 #include <string>
 #include <list>

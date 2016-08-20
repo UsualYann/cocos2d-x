@@ -153,17 +153,18 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/platform/android
 
 LOCAL_LDLIBS := -lGLESv2 \
-                -llog
+                -llog \
+                -lz
 
 LOCAL_EXPORT_LDLIBS := -lGLESv2 \
-                       -llog
+                       -llog \
+                       -lz
 
 LOCAL_WHOLE_STATIC_LIBRARIES := cocos_libpng_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_jpeg_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libxml2_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libtiff_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libwebp_static
-LOCAL_WHOLE_STATIC_LIBRARIES += cocos_zlib_static
 
 # define the macro to compile through support/zip_support/ioapi.c
 LOCAL_CFLAGS := -Wno-psabi -DUSE_FILE32API
@@ -175,4 +176,3 @@ $(call import-module,libjpeg)
 $(call import-module,libpng)
 $(call import-module,libtiff)
 $(call import-module,libwebp)
-$(call import-module,zlib)

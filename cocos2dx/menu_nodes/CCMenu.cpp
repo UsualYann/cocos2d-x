@@ -124,7 +124,9 @@ bool CCMenu::initWithArray(CCArray* pArrayOfItems)
     {
         setTouchPriority(kCCMenuHandlerPriority);
         setTouchMode(kCCTouchesOneByOne);
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
         setTouchEnabled(true);
+#endif
 
         m_bEnabled = true;
         // menu in the center of the screen

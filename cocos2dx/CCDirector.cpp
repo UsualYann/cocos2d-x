@@ -52,7 +52,9 @@ THE SOFTWARE.
 #include "actions/CCActionManager.h"
 #include "CCConfiguration.h"
 #include "keypad_dispatcher/CCKeypadDispatcher.h"
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
 #include "CCAccelerometer.h"
+#endif
 #include "sprite_nodes/CCAnimationCache.h"
 #include "touch_dispatcher/CCTouch.h"
 #include "support/user_default/CCUserDefault.h"
@@ -157,7 +159,9 @@ bool CCDirector::init(void)
     m_pKeypadDispatcher = new CCKeypadDispatcher();
 
     // Accelerometer
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
     m_pAccelerometer = new CCAccelerometer();
+#endif
 
     // create autorelease pool
     CCPoolManager::sharedPoolManager()->push();
@@ -180,7 +184,9 @@ CCDirector::~CCDirector(void)
     CC_SAFE_RELEASE(m_pActionManager);
     CC_SAFE_RELEASE(m_pTouchDispatcher);
     CC_SAFE_RELEASE(m_pKeypadDispatcher);
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
     CC_SAFE_DELETE(m_pAccelerometer);
+#endif
 
     // pop the autorelease pool
     CCPoolManager::sharedPoolManager()->pop();
@@ -1035,6 +1041,7 @@ CCKeypadDispatcher* CCDirector::getKeypadDispatcher()
     return m_pKeypadDispatcher;
 }
 
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
 void CCDirector::setAccelerometer(CCAccelerometer* pAccelerometer)
 {
     if (m_pAccelerometer != pAccelerometer)
@@ -1048,7 +1055,7 @@ CCAccelerometer* CCDirector::getAccelerometer()
 {
     return m_pAccelerometer;
 }
-
+#endif
 /***************************************************
 * implementation of DisplayLinkDirector
 **************************************************/

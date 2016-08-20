@@ -26,7 +26,11 @@
 #import "CCAccelerometerDelegate.h"
 #import <UIKit/UIKit.h>
 
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
 @interface AccelerometerDispatcher : NSObject<UIAccelerometerDelegate>
+#else
+@interface AccelerometerDispatcher : NSObject
+#endif
 {
     cocos2d::CCAccelerometerDelegate *delegate_;
     cocos2d::CCAcceleration *acceleration_;

@@ -306,18 +306,18 @@ namespace llvm {
      *
      * \sa ConvertUTF8toUTF32
      */
-    static inline ConversionResult convertUTF8Sequence(const UTF8 **source,
-                                                       const UTF8 *sourceEnd,
-                                                       UTF32 *target,
-                                                       ConversionFlags flags) {
-        if (*source == sourceEnd)
-            return sourceExhausted;
-        unsigned size = getNumBytesForUTF8(**source);
-        if ((ptrdiff_t)size > sourceEnd - *source)
-            return sourceExhausted;
-        return ConvertUTF8toUTF32(source, *source + size, &target, target + 1, flags);
-    }
-    
+//    static inline ConversionResult convertUTF8Sequence(const UTF8 **source,
+//                                                       const UTF8 *sourceEnd,
+//                                                       UTF32 *target,
+//                                                       ConversionFlags flags) {
+//        if (*source == sourceEnd)
+//            return sourceExhausted;
+//        unsigned size = getNumBytesForUTF8(**source);
+//        if ((ptrdiff_t)size > sourceEnd - *source)
+//            return sourceExhausted;
+//        return ConvertUTF8toUTF32(source, *source + size, &target, target + 1, flags);
+//    }
+	
     /**
      * Returns true if a blob of text starts with a UTF-16 big or little endian byte
      * order mark.
@@ -1091,7 +1091,7 @@ bool iscjk_unicode(unsigned short ch)
 
 void cc_utf8_trim_ws(std::vector<unsigned short>* str)
 {
-    int len = str->size();
+    int len = (int)str->size();
     
     if ( len <= 0 )
         return;
@@ -1204,7 +1204,7 @@ char * cc_utf16_to_utf8(const unsigned short* utf16, int* outUTF8CharacterCount 
         
         if (outUTF8CharacterCount)
         {
-            *outUTF8CharacterCount = outUtf8.length();
+            *outUTF8CharacterCount = (int)outUtf8.length();
         }
     }
     

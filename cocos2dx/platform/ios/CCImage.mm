@@ -65,8 +65,8 @@ static bool _initWithImage(CGImageRef cgImage, tImageInfo *pImageinfo)
     
     // get image info
     
-    pImageinfo->width = CGImageGetWidth(cgImage);
-    pImageinfo->height = CGImageGetHeight(cgImage);
+    pImageinfo->width = (unsigned int)CGImageGetWidth(cgImage);
+    pImageinfo->height = (unsigned int)CGImageGetHeight(cgImage);
     
     CGImageAlphaInfo info = CGImageGetAlphaInfo(cgImage);
     pImageinfo->hasAlpha = (info == kCGImageAlphaPremultipliedLast) 
@@ -123,28 +123,27 @@ static bool _initWithImage(CGImageRef cgImage, tImageInfo *pImageinfo)
     return true;
 }
 
-static bool _initWithFile(const char* path, tImageInfo *pImageinfo)
-{
-    CGImageRef                CGImage;    
-    UIImage                    *jpg;
-    UIImage                    *png;
-    bool            ret;
-    
-    // convert jpg to png before loading the texture
-    
-    NSString *fullPath = [NSString stringWithUTF8String:path];
-    jpg = [[UIImage alloc] initWithContentsOfFile: fullPath];
-    png = [[UIImage alloc] initWithData:UIImagePNGRepresentation(jpg)];
-    CGImage = png.CGImage;    
-    
-    ret = _initWithImage(CGImage, pImageinfo);
-    
-    [png release];
-    [jpg release];
-    
-    return ret;
-}
-
+//static bool _initWithFile(const char* path, tImageInfo *pImageinfo)
+//{
+//    CGImageRef                CGImage;    
+//    UIImage                    *jpg;
+//    UIImage                    *png;
+//    bool            ret;
+//    
+//    // convert jpg to png before loading the texture
+//    
+//    NSString *fullPath = [NSString stringWithUTF8String:path];
+//    jpg = [[UIImage alloc] initWithContentsOfFile: fullPath];
+//    png = [[UIImage alloc] initWithData:UIImagePNGRepresentation(jpg)];
+//    CGImage = png.CGImage;    
+//    
+//    ret = _initWithImage(CGImage, pImageinfo);
+//    
+//    [png release];
+//    [jpg release];
+//    
+//    return ret;
+//}
 
 static bool _initWithData(void * pBuffer, int length, tImageInfo *pImageinfo)
 {
@@ -177,8 +176,17 @@ static CGSize _calculateStringSize(NSString *str, id font, CGSize *constrainSize
     
     for (NSString *s in listItems)
     {
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
         CGSize tmp = [s sizeWithFont:font constrainedToSize:textRect];
-        
+#else
+        NSAttributedString *attributedText =
+        [[NSAttributedString alloc] initWithString:s
+                                        attributes:@{NSFontAttributeName: font}];
+        CGRect rect = [attributedText boundingRectWithSize:textRect
+                                                   options:NSStringDrawingUsesLineFragmentOrigin
+                                                   context:nil];
+        CGSize tmp = rect.size;
+#endif
         if (tmp.width > dim.width)
         {
            dim.width = tmp.width; 
@@ -285,8 +293,8 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
         
         if ( pInfo->hasShadow )
         {
-            shadowStrokePaddingX = std::max(shadowStrokePaddingX, (float)abs(pInfo->shadowOffset.width));
-            shadowStrokePaddingY = std::max(shadowStrokePaddingY, (float)abs(pInfo->shadowOffset.height));
+            shadowStrokePaddingX = std::max(shadowStrokePaddingX, (float)fabs(pInfo->shadowOffset.width));
+            shadowStrokePaddingY = std::max(shadowStrokePaddingY, (float)fabs(pInfo->shadowOffset.height));
         }
         
         // add the padding (this could be 0 if no shadow and no stroke)
@@ -326,9 +334,9 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
         
         // measure text size with specified font and determine the rectangle to draw text in
         unsigned uHoriFlag = eAlign & 0x0f;
-        UITextAlignment align = (UITextAlignment)((2 == uHoriFlag) ? UITextAlignmentRight
-                                : (3 == uHoriFlag) ? UITextAlignmentCenter
-                                : UITextAlignmentLeft);
+        UITextAlignment align = (NSTextAlignment)((2 == uHoriFlag) ? NSTextAlignmentRight
+                                : (3 == uHoriFlag) ? NSTextAlignmentCenter
+                                : NSTextAlignmentLeft);
 
         
         // take care of stroke if needed
@@ -394,7 +402,34 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
         
         // actually draw the text in the context
 		// XXX: ios7 casting
-        [str drawInRect:CGRectMake(textOriginX, textOrigingY, textWidth, textHeight) withFont:font lineBreakMode:NSLineBreakByWordWrapping alignment:(NSTextAlignment)align];
+        if([[[UIDevice currentDevice] systemVersion] compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending)
+        {
+            NSMutableParagraphStyle *_paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
+            _paragraphStyle.alignment = (NSTextAlignment)align;
+            _paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+            [str drawInRect:CGRectMake(textOriginX, textOrigingY, textWidth, textHeight)
+             withAttributes:@{NSFontAttributeName: font,
+                              NSStrokeWidthAttributeName: [NSNumber numberWithFloat:-pInfo->strokeSize*(100.0f/((UIFont*)font).pointSize)],
+                              NSForegroundColorAttributeName:[UIColor colorWithRed:pInfo->tintColorR
+                                                                             green:pInfo->tintColorG
+                                                                              blue:pInfo->tintColorB
+                                                                             alpha:1.0f],
+                              NSParagraphStyleAttributeName:_paragraphStyle,
+                              NSStrokeColorAttributeName: [UIColor colorWithRed:pInfo->strokeColorR
+                                                                          green:pInfo->strokeColorG
+                                                                           blue:pInfo->strokeColorB
+                                                                          alpha:1.0f]}
+             ];
+        }
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
+        else
+        {
+            
+            // actually draw the text in the context
+            // XXX: ios7 casting
+            [str drawInRect:CGRectMake(textOriginX, textOrigingY, textWidth, textHeight) withFont:font lineBreakMode:NSLineBreakByWordWrapping alignment:(NSTextAlignment)align];
+        }
+#endif
         
         // pop the context
         UIGraphicsPopContext();
@@ -445,7 +480,7 @@ bool CCImage::initWithImageFile(const char * strPath, EImageFormat eImgFmt/* = e
 				
     if (pBuffer != NULL && nSize > 0)
     {
-        bRet = initWithImageData(pBuffer, nSize, eImgFmt);
+        bRet = initWithImageData(pBuffer, (int)nSize, eImgFmt);
     }
     CC_SAFE_DELETE_ARRAY(pBuffer);
     return bRet;
@@ -461,7 +496,7 @@ bool CCImage::initWithImageFileThreadSafe(const char *fullpath, EImageFormat ima
     unsigned char* pBuffer = CCFileUtils::sharedFileUtils()->getFileData(fullpath, "rb", &nSize);
     if (pBuffer != NULL && nSize > 0)
     {
-        bRet = initWithImageData(pBuffer, nSize, imageType);
+        bRet = initWithImageData(pBuffer, (int)nSize, imageType);
     }
     CC_SAFE_DELETE_ARRAY(pBuffer);
     return bRet;
@@ -487,10 +522,10 @@ bool CCImage::initWithImageData(void * pData,
         {
             bRet = _initWithRawData(pData, nDataLen, nWidth, nHeight, nBitsPerComponent, false);
         }
-        else if (eFmt == kFmtWebp)
-        {
-            bRet = _initWithWebpData(pData, nDataLen);
-        }
+//        else if (eFmt == kFmtWebp)
+//        {
+//            bRet = _initWithWebpData(pData, nDataLen);
+//        }
         else // init with png or jpg file data
         {
             bRet = _initWithData(pData, nDataLen, &info);

@@ -5,7 +5,7 @@
 //  Created by Otto Chrons on 9/26/08.
 //  Copyright 2008 Seastringo Oy. All rights reserved.
 //
-
+#if !defined(__TV_OS_VERSION_MAX_ALLOWED)
 #import "AccelerometerSimulation.h"
 
 // when compiling to ARM (iPhone device), hide everything and use system defaults
@@ -148,7 +148,7 @@ static AccelerometerSimulation *sharedAccelerometer = NULL;
     char buffer[1024];
     // we never exit...
     while(1) {
-        int count = recv( udpSocket, buffer, sizeof(buffer), 0 );
+        int count = (int)recv( udpSocket, buffer, sizeof(buffer), 0 );
         if( count > 0 )
         {
             // got data, let's pass it on
@@ -245,4 +245,5 @@ static AccelerometerSimulation *sharedAccelerometer = NULL;
 }
 @end
 
+#endif
 #endif
