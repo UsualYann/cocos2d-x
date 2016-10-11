@@ -23,6 +23,8 @@
  ****************************************************************************/
 
 #include "platform/CCImage.h"
+
+/*
 #include "textures/CCTexture2D.h"
 #if defined(__native_client__) || defined(EMSCRIPTEN)
 // TODO(sbc): I'm pretty sure all platforms should be including
@@ -35,12 +37,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+*/
 NS_CC_BEGIN
 
 bool CCImage::_initWithWebpData(void *pData, int nDataLen)
 {
-	bool bRet = false;
+	/*bool bRet = false;
 	do
 	{
         WebPDecoderConfig config;
@@ -72,6 +74,8 @@ bool CCImage::_initWithWebpData(void *pData, int nDataLen)
         bRet = true;
 	} while (0);
 	return bRet;
+	 */
+	return false;
 }
 
 NS_CC_END
